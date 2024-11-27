@@ -79,7 +79,7 @@ import numpy as np
 import pygame
 import torch
 import time
-from Vehicle_environment import VehicleEnv
+from paths.Vehicle_environment_circular import VehicleEnv
 from DQN_agent import DQNAgent
 
 
@@ -108,7 +108,7 @@ def test_model(model_path, num_episodes=5):
             total_reward += reward
 
             env.render()
-            # time.sleep(0.05)  # Slow down for visualization
+            time.sleep(0.0005)  # Slow down for visualization
 
             print(f"\rStep Reward: {reward:.2f}, Total Reward: {total_reward:.2f}", end="")
 

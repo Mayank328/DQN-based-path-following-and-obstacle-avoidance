@@ -3,8 +3,10 @@ import pygame
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-from Vehicle_environment import VehicleEnv
+# from paths.Vehicle_environment_circular import VehicleEnv
+from paths.Vehicle_environment_non_circular import VehicleEnvNonCircular as VehicleEnv
 from DQN_agent import DQNAgent
+
 
 def plot_rewards(rewards, window_size=100):
     """Plot the rewards and running average"""
