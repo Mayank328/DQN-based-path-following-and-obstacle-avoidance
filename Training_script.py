@@ -42,10 +42,10 @@ def train(render=True):
     agent = DQNAgent(state_size, action_size)
     
     # Training parameters
-    episodes = 500
+    episodes = 1000
     max_steps = 1000
-    target_update_frequency = 10
-    save_frequency = 100
+    target_update_frequency = 15
+    save_frequency = 200
     
     # Lists to store metrics
     all_rewards = []
