@@ -79,7 +79,9 @@ import numpy as np
 import pygame
 import torch
 import time
-from paths.Vehicle_environment_circular import VehicleEnv
+# from paths.Vehicle_environment_circular import VehicleEnv
+# from paths.Vehicle_environment_non_circular import VehicleEnvNonCircular as VehicleEnv
+from paths.Vehicle_environment_S import VehicleEnvSmoothPath as VehicleEnv
 from DQN_agent import DQNAgent
 
 
