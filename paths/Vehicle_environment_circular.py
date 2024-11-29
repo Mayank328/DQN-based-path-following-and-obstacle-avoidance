@@ -173,7 +173,7 @@ class VehicleEnv(gym.Env):
         reward = path_reward + angle_reward + obstacle_avoidance_reward
         
         # Penalties
-        if path_deviation > 30:
+        if path_deviation > 50:
             reward -= 5
         
         # Enhanced obstacle collision penalty
