@@ -1,25 +1,40 @@
 import os
 import pygame
-# import time
 import numpy as np
 import matplotlib.pyplot as plt
-# from paths.Vehicle_environment_circular import VehicleEnv
-# from paths.Vehicle_environment_non_circular import VehicleEnvNonCircular as VehicleEnv
-# from paths.Vehicle_environment_S import VehicleEnvSmoothPath as VehicleEnv
-# from paths.Vehicle_environment_S_obs_in_path import VehicleEnvSmoothPath as VehicleEnv
-# from paths.Vehicle_environment_square import VehicleEnvSquarePath as VehicleEnv
-# from paths.circular_road import VehicleEnv
-from S_path_road import VehicleEnvSmoothPath as VehicleEnv
-# from DQN_agent import DQNAgent
+from gymnasium import spaces
+from paths.Vehicle_environment_circular import VehicleEnv
 from DQN_agent import DQNAgent
 
+class FixedStartEnvBase(VehicleEnv):
+    def __init__(self):
+        super().__init__()
+        self.start_position = None
+        self.start_angle = None
+        
+        # Set fixed start position for circular path
+        start_angle = 0  # Start at rightmost point
+        self.start_position = [
+            self.path_center[0] + self.path_radius * np.cos(start_angle),
+            self.path_center[1] + self.path_radius * np.sin(start_angle)
+        ]
+        self.start_angle = start_angle + np.pi/2  # Face tangent to circle
+    
+    def reset(self, seed=None):
+        super().reset(seed=seed)
+        # Override with fixed position and angle
+        self.vehicle_pos = list(self.start_position)
+        self.vehicle_angle = self.start_angle
+        
+        # Generate obstacles after setting position
+        self.obstacles = self._generate_path_obstacles()
+        
+        return self._get_observation(), {}
 
 def plot_rewards(rewards, window_size=100):
-    """Plot the rewards and running average"""
     plt.figure(figsize=(10, 5))
     plt.plot(rewards, label='Episode Reward', alpha=0.6)
     
-    # Calculate and plot running average
     if len(rewards) >= window_size:
         running_avg = np.convolve(rewards, np.ones(window_size)/window_size, mode='valid')
         plt.plot(range(window_size-1, len(rewards)), running_avg, 
@@ -32,30 +47,27 @@ def plot_rewards(rewards, window_size=100):
     plt.legend()
     plt.grid(True, alpha=0.3)
     
-    # Save the plot
     plots_dir = "training_plots"
     os.makedirs(plots_dir, exist_ok=True)
     plt.savefig(os.path.join(plots_dir, 'reward_plot.png'))
     plt.close()
 
 def train(render=True):
-    # Create necessary directories
     models_dir = "trained_models"
     os.makedirs(models_dir, exist_ok=True)
     
-    # Initialize environment and agent
-    env = VehicleEnv()
+    # Initialize environment with fixed start position
+    env = FixedStartEnvBase()
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = DQNAgent(state_size, action_size)
     
     # Training parameters
-    episodes = 2000
-    max_steps = 1000
-    target_update_frequency = 15
+    episodes = 1000
+    max_steps = 800
+    target_update_frequency = 20
     save_frequency = 500
     
-    # Lists to store metrics
     all_rewards = []
     best_reward = float('-inf')
     
@@ -63,7 +75,6 @@ def train(render=True):
         for episode in range(episodes):
             state, _ = env.reset()
             total_reward = 0
-            episode_steps = []  # Store step-wise rewards
             
             for step in range(max_steps):
                 action = agent.act(state)
@@ -72,7 +83,6 @@ def train(render=True):
                 agent.replay()
                 
                 total_reward += reward
-                episode_steps.append(reward)
                 state = next_state
                 
                 if render:
@@ -81,24 +91,18 @@ def train(render=True):
                 if done:
                     break
             
-            # Store episode metrics
             all_rewards.append(total_reward)
             
-            # Update target network periodically
             if episode % target_update_frequency == 0:
                 agent.update_target_network()
             
-            # Save best model
             if total_reward > best_reward:
                 best_reward = total_reward
-                best_model_path = os.path.join(models_dir, 'vehicle_model_best.pth')
-                agent.save_model(best_model_path)
+                agent.save_model(os.path.join(models_dir, 'vehicle_model_best.pth'))
             
-            # Save model periodically
             if episode % save_frequency == 0:
                 save_path = os.path.join(models_dir, f'vehicle_model_episode_{episode}.pth')
                 agent.save_model(save_path)
-                # Plot current rewards
                 plot_rewards(all_rewards)
                 print(f"\nModel saved to: {save_path}")
             
@@ -112,7 +116,6 @@ def train(render=True):
         print("\nTraining interrupted by user")
     
     finally:
-        # Save final model and plot
         final_save_path = os.path.join(models_dir, 'vehicle_model_final.pth')
         agent.save_model(final_save_path)
         plot_rewards(all_rewards)
