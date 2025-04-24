@@ -131,7 +131,7 @@ class DQNAgent:
 
         # Initialize replay memory
         self.memory = deque(maxlen=10000)
-        self.batch_size = 32
+        self.batch_size = 64
         self.gamma = 0.95
         self.epsilon = 1.0
         self.epsilon_min = 0.01

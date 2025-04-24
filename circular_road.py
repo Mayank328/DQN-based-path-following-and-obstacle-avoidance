@@ -303,8 +303,9 @@
 
 
 #///////NEW CIRCULAR_ENVIRONMENT WITH LIDAR SENSING OBSTACLES,PATH BASED ON WAYPOINTS,FIXED STARTING POINT OF THE AGENT/////
-#///////no of obstacle reduced and increased training speed/////
-# /////// Added a waypoint-progress term, Harden the deviation penalty, Flip your obstacle bonus into a smaller penalty ////////
+#///////no of obstacle reduced and increased training speed//////
+#/////// Added a waypoint-progress term, Harden the deviation penalty, Flip your obstacle bonus into a smaller penalty /////
+
 
 import gymnasium as gym
 import numpy as np

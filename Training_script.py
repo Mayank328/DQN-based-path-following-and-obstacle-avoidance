@@ -2,7 +2,12 @@ import os
 import pygame
 import numpy as np
 import matplotlib.pyplot as plt
-from paths.circular_road import VehicleEnv
+# from paths.circular_road import VehicleEnv
+# from paths.square_road import VehicleEnv
+# from paths.S_path_road import VehicleEnv
+# from paths.oval_path import VehicleEnv
+# from paths.zig_zag_smooth_corner import VehicleEnv
+from paths.square_with_curved_corner import VehicleEnv
 from DQN_agent import DQNAgent
 
 def plot_combined(rewards, mse_list, window_size=100, save_path="training_plots/combined_plot.png"):
@@ -75,7 +80,7 @@ def train(render=True):
     episodes = 2000
     max_steps = 1000
     target_update_frequency = 15
-    save_frequency = 500
+    save_frequency = 1000
     
     # Lists to store metrics
     all_rewards = []
